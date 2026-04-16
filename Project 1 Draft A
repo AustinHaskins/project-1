@@ -1,0 +1,61 @@
+import sys
+from PyQt6.QtWidgets import *
+from vote import save_vote
+class VoteLook(QWidget):
+    def __init__(self) -> None:
+        super().__init__()
+        self.filename = "votes.csv"
+        self.__votes = {
+            'Isabella': 0,
+            'Genji': 0,
+            'Hannah': 0
+        }
+
+        self.setWindowTitle("Voting")
+        self.setFixedSize(400, 400)
+
+        layout = QVBoxLayout()
+
+        title = QLabel("Vote for the Candidate")
+        layout.addWidget(title)
+
+        self.isabella_button = QPushButton("Vote Isabella")
+        self.genji_button =QPushButton("Vote Genji")
+        self.hannah_button = QPushButton("Vote Hannah")
+        self.results_button = QPushButton("Show Results")
+        self.exit_button = QPushButton("Exit")
+
+        layout.addWidget(self.isabella_button)
+        layout.addWidget(self.genji_button)
+        layout.addWidget(self.hannah_button)
+        layout.addWidget(self.results_button)
+        layout.addWidget(self.exit_button)
+
+        self.setLayout(layout)
+
+        self.isabella_button.clicked.connect(self.vote_isabella)
+        self.genji_button.clicked.connect(self.vote_genji)
+        self.hannah_button.clicked.connect(self.vote_hannah)
+        self.results_button.clicked.connect(self.results)
+        self.exit_button.clicked.connect(self.close)
+
+    def vote_isabella(self) -> None:
+        """ Vote for Isabella """
+        self.__votes["Isabella"] += 1
+        self.save_vote("Isabella")
+    def vote_genji(self) -> None:
+        """ Vote for Genji """
+        self.__votes["Genji"] += 1
+        self.save_vote("Genji")
+    def vote_hannah(self) -> None:
+        """ Vote for Hannah """
+        self.__votes["Hannah"] += 1
+        self.save_vote("Hannah")
+    def results(self) -> None:
+        """ Displays results """
+        pass
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = VoteLook()
+    window.show()
+    sys.exit(app.exec())
