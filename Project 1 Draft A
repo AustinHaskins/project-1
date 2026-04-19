@@ -1,26 +1,19 @@
-import sys
+look.py
 from PyQt6.QtWidgets import *
-from vote import save_vote
-class VoteLook(QWidget):
+
+class VoteView(QWidget):
     def __init__(self) -> None:
         super().__init__()
-        self.filename = "votes.csv"
-        self.__votes = {
-            'Isabella': 0,
-            'Genji': 0,
-            'Hannah': 0
-        }
-
         self.setWindowTitle("Voting")
         self.setFixedSize(400, 400)
 
         layout = QVBoxLayout()
-
         title = QLabel("Vote for the Candidate")
         layout.addWidget(title)
 
+        # Buttons
         self.isabella_button = QPushButton("Vote Isabella")
-        self.genji_button =QPushButton("Vote Genji")
+        self.genji_button = QPushButton("Vote Genji")
         self.hannah_button = QPushButton("Vote Hannah")
         self.results_button = QPushButton("Show Results")
         self.exit_button = QPushButton("Exit")
@@ -33,29 +26,63 @@ class VoteLook(QWidget):
 
         self.setLayout(layout)
 
-        self.isabella_button.clicked.connect(self.vote_isabella)
-        self.genji_button.clicked.connect(self.vote_genji)
-        self.hannah_button.clicked.connect(self.vote_hannah)
-        self.results_button.clicked.connect(self.results)
-        self.exit_button.clicked.connect(self.close)
+
+
+main.py
+import sys
+
+from PyQt6.QtWidgets import QApplication
+from logic import VoteLogic
+from look import VoteView
+class VoteController:
+    def __init__(self) -> None:
+        self.logic = VoteLogic()
+        self.view = VoteView()
+
+        self.view.isabella_button.clicked.connect(self.vote_isabella)
+        self.view.genji_button.clicked.connect(self. vote_genji)
+        self.view.hannah_button.clicked.connect(self.vote_hannah)
+        self.view.results_button.clicked.connect(self.results)
+        self.view.exit_button.clicked.connect(self.view.close)
 
     def vote_isabella(self) -> None:
-        """ Vote for Isabella """
-        self.__votes["Isabella"] += 1
-        self.save_vote("Isabella")
+        self.logic.add_vote("Isabella")
     def vote_genji(self) -> None:
-        """ Vote for Genji """
-        self.__votes["Genji"] += 1
-        self.save_vote("Genji")
+        self.logic.add_vote("Genji")
     def vote_hannah(self) -> None:
-        """ Vote for Hannah """
-        self.__votes["Hannah"] += 1
-        self.save_vote("Hannah")
+        self.logic.add_vote("Hannah")
     def results(self) -> None:
-        """ Displays results """
-        pass
+        print(self.logic.get_results())
+    def run(self):
+        self.view.show()
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = VoteLook()
-    window.show()
+    controller = VoteController()
+    controller.run()
     sys.exit(app.exec())
+
+
+logic.py
+import csv
+
+class VoteLogic:
+    def __init__(self, filename="votes.csv") -> None:
+        self.filename = filename
+        self._votes = {'Isabella': 0, 'Genji': 0, 'Hannah': 0}
+
+    def add_vote(self, candidate: str):
+        if candidate in self._votes:
+            self._votes[candidate] += 1
+            self.save_to_csv(candidate)
+
+    def save_to_csv(self, candidate):
+        try:
+            with open(self.filename, 'a', newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerow([candidate])
+        except Exception as e:
+            print(f"Error saving: {e}")
+
+    def get_results(self):
+        return self._votes
