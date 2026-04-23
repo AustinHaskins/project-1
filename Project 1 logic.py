@@ -1,9 +1,14 @@
 import csv
+import os
 
 class VoteLogic:
     """ Handles vote storage and the file name """
     def __init__(self, filename="votes.csv") -> None:
         self.filename = filename
+        if not os.path.exists(filename):
+            with open(filename, "w", newline="", encoding="utf-8") as file:
+                writer = csv.writer(file)
+                writer.writerow(["ID", "Candidate"])
         self._votes = {'Isabella': 0, 'Genji': 0, 'Hannah': 0}
         self._ID = set()
 
